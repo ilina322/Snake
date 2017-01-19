@@ -7,7 +7,7 @@ public class Game {
 	private static final char APPLE_SYMBOL = '@';
 	private static final char EMPTY_SYMBOL = ' ';
 	private static final char OUTLINE_SYMBOL = '*';
-	private static final long DELAY_IN_MILLIS = 300;
+	private static final long DELAY_IN_MILLIS = 500;
 	static Scanner consoleReader = new Scanner(System.in);
 	private static int height = 10;
 	private static int length = 25;
@@ -29,9 +29,6 @@ public class Game {
 		generateApple();
 		printGamePlain();
 		moveSnakeRight();
-		while(isRunning){
-		executeCommand();
-		}
 	
 	}
 
@@ -43,45 +40,40 @@ public class Game {
 		}
 	}
 
-	private static void executeCommand(){
-		CurrCommand = readCommandFromUser();
-		handleCommand(CurrCommand);
-	}
-	
-	private static String readCommandFromUser() {
-		String command = consoleReader.nextLine();
-		return command;
-		//TODO convert to char if possible
-	}
 
-	private static void handleCommand(String command){
-		if(command.equals("w")){
+	private static void handleCommand(char command){
+		if(command == 'w'){
 			isUp = true;
 			isLeft = false;
 			isRight = false;
 			isDown = false;
+			moveSnakeUp();
 		}
-		if(command.equals("s")){
+		if(command == 's'){
 			isUp = false;
 			isLeft = false;
 			isRight = false;
 			isDown = true;
+			moveSnakeDown();
 		}
-		if(command.equals("d")){
+		if(command == 'd'){
 			isUp = false;
 			isLeft = false;
 			isRight = true;
 			isDown = false;
+			moveSnakeRight();
 		}
-		if(command.equals("a")){
+		if(command == 'a'){
 			isUp = false;
 			isLeft = true;
 			isRight = false;
 			isDown = false;
+			moveSnakeLeft();
 		}
 	}
 	
 	private static void moveSnakeRight() {
+		setKeyboardListener();
 		while (isRight) {
 			snakeCurrX++;
 			printSnake(snakeCurrX, snakeCurrY);
@@ -93,6 +85,7 @@ public class Game {
 	}
 
 	private static void moveSnakeLeft() {
+		setKeyboardListener();
 		while (isLeft) {
 			snakeCurrX--;
 			printSnake(snakeCurrX, snakeCurrY);
@@ -108,6 +101,7 @@ public class Game {
 	}
 
 	private static void moveSnakeUp() {
+		setKeyboardListener();
 		while (isUp) {
 			snakeCurrY--;
 			printSnake(snakeCurrX, snakeCurrY); 
@@ -119,6 +113,7 @@ public class Game {
 	}
 
 	private static void moveSnakeDown() {
+		setKeyboardListener();
 		while (isDown) {
 			snakeCurrY++;
 			printSnake(snakeCurrX, snakeCurrY);
@@ -193,8 +188,12 @@ public class Game {
 			@Override
 			public void run() {
 				while (isRunning) {
+					String command = consoleReader.nextLine();
+					if(command != null && command.length() > 0){
 					char input = consoleReader.nextLine().charAt(0);
 					handleKeyPressed(input);
+					handleCommand(input);
+					}
 				}
 				consoleReader.close();
 			}
