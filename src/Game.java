@@ -11,16 +11,16 @@ public class Game {
 	private static int height = 10;
 	private static int length = 25;
 	private static char[][] plain;
-	private static char snake;
+	private static char apple = APPLE_SYMBOL;
 	private static int snakeCurrX = 1;
 	private static int snakeCurrY = 1;
-	private static String CurrCommand = null;
 	private static boolean isRight = true;
 	private static boolean isDown = false;
 	private static boolean isLeft = false;
 	private static boolean isUp = false;
 	private static boolean isRunning = true;
 	private static int score = 0;
+	private static boolean[][] appleBoard;
 
 	public static void main(String[] args) {
 
@@ -28,8 +28,13 @@ public class Game {
 		generateApple();
 		printGamePlain();
 		moveSnakeRight();
-		
 
+	}
+
+	private static void eatApple() {
+		if (appleBoard[snakeCurrX][snakeCurrY] == true) {
+			generateApple();
+		}
 	}
 
 	private static void delay() {
@@ -39,6 +44,14 @@ public class Game {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void moveSnake(){
+		moveSnakeDown();
+		moveSnakeLeft();
+		moveSnakeRight();
+		moveSnakeUp();
+		eatApple();
+	}
 
 	private static void handleCommand(char command) {
 		switch (command) {
@@ -47,30 +60,27 @@ public class Game {
 			isLeft = false;
 			isRight = false;
 			isDown = false;
-			moveSnakeUp();
 			break;
 		case 's':
 			isUp = false;
 			isLeft = false;
 			isRight = false;
 			isDown = true;
-			moveSnakeDown();
 			break;
 		case 'd':
 			isUp = false;
 			isLeft = false;
 			isRight = true;
 			isDown = false;
-			moveSnakeRight();
 			break;
 		case 'a':
 			isUp = false;
 			isLeft = true;
 			isRight = false;
 			isDown = false;
-			moveSnakeLeft();
 			break;
 		}
+		moveSnake();
 	}
 
 	private static void moveSnakeRight() {
@@ -79,11 +89,12 @@ public class Game {
 			snakeCurrX++;
 			printSnake(snakeCurrX, snakeCurrY);
 			if (!isOnPlainBorder(snakeCurrX - 1, snakeCurrY)) {
-					plain[snakeCurrX - 1][snakeCurrY] = EMPTY_SYMBOL;
-					printGamePlain();
+				plain[snakeCurrX - 1][snakeCurrY] = EMPTY_SYMBOL;
+				printGamePlain();
 			}
+		eatApple();
 		}
-			}
+	}
 
 	private static void moveSnakeLeft() {
 		setKeyboardListener();
@@ -98,7 +109,7 @@ public class Game {
 	}
 
 	private static void printSnake(int x, int y) {
-			plain[x][y] = SNAKE_SYMBOL;
+		plain[x][y] = SNAKE_SYMBOL;
 	}
 
 	private static void moveSnakeUp() {
@@ -123,11 +134,11 @@ public class Game {
 			}
 			printGamePlain();
 		}
-		//eatApple();
 	}
 
 	private static void generateApple() {
 		Random rand = new Random();
+		appleBoard = new boolean[length][height];
 		int x = rand.nextInt(length);
 		int y = rand.nextInt(height);
 		while (isOnPlainBorder(x, y)) {
@@ -135,6 +146,7 @@ public class Game {
 			y = rand.nextInt(height);
 		}
 		plain[x][y] = APPLE_SYMBOL;
+		appleBoard[x][y] = true;
 
 	}
 
