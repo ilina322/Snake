@@ -8,7 +8,6 @@ public class Game {
 	private static final char EMPTY_SYMBOL = ' ';
 	private static final char OUTLINE_SYMBOL = '*';
 	private static final long DELAY_IN_MILLIS = 500;
-	static Scanner consoleReader = new Scanner(System.in);
 	private static int height = 10;
 	private static int length = 25;
 	private static char[][] plain;
@@ -21,15 +20,16 @@ public class Game {
 	private static boolean isLeft = false;
 	private static boolean isUp = false;
 	private static boolean isRunning = true;
+	private static int score = 0;
 
 	public static void main(String[] args) {
 
-		setKeyboardListener();
 		createGamePlain();
 		generateApple();
 		printGamePlain();
 		moveSnakeRight();
-	
+		
+
 	}
 
 	private static void delay() {
@@ -40,49 +40,50 @@ public class Game {
 		}
 	}
 
-
-	private static void handleCommand(char command){
-		if(command == 'w'){
+	private static void handleCommand(char command) {
+		switch (command) {
+		case 'w':
 			isUp = true;
 			isLeft = false;
 			isRight = false;
 			isDown = false;
 			moveSnakeUp();
-		}
-		if(command == 's'){
+			break;
+		case 's':
 			isUp = false;
 			isLeft = false;
 			isRight = false;
 			isDown = true;
 			moveSnakeDown();
-		}
-		if(command == 'd'){
+			break;
+		case 'd':
 			isUp = false;
 			isLeft = false;
 			isRight = true;
 			isDown = false;
 			moveSnakeRight();
-		}
-		if(command == 'a'){
+			break;
+		case 'a':
 			isUp = false;
 			isLeft = true;
 			isRight = false;
 			isDown = false;
 			moveSnakeLeft();
+			break;
 		}
 	}
-	
+
 	private static void moveSnakeRight() {
 		setKeyboardListener();
 		while (isRight) {
 			snakeCurrX++;
 			printSnake(snakeCurrX, snakeCurrY);
 			if (!isOnPlainBorder(snakeCurrX - 1, snakeCurrY)) {
-				plain[snakeCurrX - 1][snakeCurrY] = EMPTY_SYMBOL;
+					plain[snakeCurrX - 1][snakeCurrY] = EMPTY_SYMBOL;
+					printGamePlain();
 			}
-			printGamePlain();
 		}
-	}
+			}
 
 	private static void moveSnakeLeft() {
 		setKeyboardListener();
@@ -97,14 +98,14 @@ public class Game {
 	}
 
 	private static void printSnake(int x, int y) {
-		plain[x][y] = SNAKE_SYMBOL;
+			plain[x][y] = SNAKE_SYMBOL;
 	}
 
 	private static void moveSnakeUp() {
 		setKeyboardListener();
 		while (isUp) {
 			snakeCurrY--;
-			printSnake(snakeCurrX, snakeCurrY); 
+			printSnake(snakeCurrX, snakeCurrY);
 			if (!isOnPlainBorder(snakeCurrX, snakeCurrY + 1)) {
 				plain[snakeCurrX][snakeCurrY + 1] = EMPTY_SYMBOL;
 			}
@@ -122,6 +123,7 @@ public class Game {
 			}
 			printGamePlain();
 		}
+		//eatApple();
 	}
 
 	private static void generateApple() {
@@ -145,7 +147,7 @@ public class Game {
 
 	private static void printGamePlain() {
 		clearConsole();
-		System.out.println(); 
+		System.out.println();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < length; x++) {
 				{
@@ -156,7 +158,6 @@ public class Game {
 			System.out.println();
 		}
 		delay();
-
 	}
 
 	private static void createGamePlain() {
@@ -172,7 +173,7 @@ public class Game {
 		}
 
 	}
-	
+
 	private static void clearConsole() {
 		try {
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -187,19 +188,17 @@ public class Game {
 
 			@Override
 			public void run() {
+				Scanner scanner = new Scanner(System.in);
 				while (isRunning) {
-					String command = consoleReader.nextLine();
-					if(command != null && command.length() > 0){
-					char input = consoleReader.nextLine().charAt(0);
-					handleKeyPressed(input);
-					handleCommand(input);
-					}
+					char consoleReader = scanner.nextLine().charAt(0);
+					handleCommand(consoleReader);
+					handleKeyPressed(consoleReader);
 				}
-				consoleReader.close();
+				scanner.close();
 			}
 		}).start();
 	}
-	
+
 	private static void handleKeyPressed(char keyCode) {
 		System.out.println("Key pressed:" + keyCode);
 	}
