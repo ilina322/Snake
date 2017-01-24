@@ -20,7 +20,8 @@ public class Game {
 	private static boolean isUp = false;
 	private static boolean isRunning = true;
 	private static int score = 0;
-	private static boolean[][] appleBoard;
+	private static boolean[][] appleLayer;
+	private static int var = 1;
 
 	public static void main(String[] args) {
 
@@ -32,8 +33,10 @@ public class Game {
 	}
 
 	private static void eatApple() {
-		if (appleBoard[snakeCurrX][snakeCurrY] == true) {
+		if (appleLayer[snakeCurrX][snakeCurrY] == true) {
 			generateApple();
+			score++;
+			var++;
 		}
 	}
 
@@ -50,7 +53,6 @@ public class Game {
 		moveSnakeLeft();
 		moveSnakeRight();
 		moveSnakeUp();
-		eatApple();
 	}
 
 	private static void handleCommand(char command) {
@@ -88,8 +90,8 @@ public class Game {
 		while (isRight) {
 			snakeCurrX++;
 			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX - 1, snakeCurrY)) {
-				plain[snakeCurrX - 1][snakeCurrY] = EMPTY_SYMBOL;
+			if (!isOnPlainBorder(snakeCurrX - var, snakeCurrY)) {
+				plain[snakeCurrX - var][snakeCurrY] = EMPTY_SYMBOL;
 				printGamePlain();
 			}
 		eatApple();
@@ -101,11 +103,12 @@ public class Game {
 		while (isLeft) {
 			snakeCurrX--;
 			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX + 1, snakeCurrY)) {
-				plain[snakeCurrX + 1][snakeCurrY] = EMPTY_SYMBOL;
+			if (!isOnPlainBorder(snakeCurrX + var, snakeCurrY)) {
+				plain[snakeCurrX + var][snakeCurrY] = EMPTY_SYMBOL;
 			}
 			printGamePlain();
 		}
+		eatApple();
 	}
 
 	private static void printSnake(int x, int y) {
@@ -117,11 +120,12 @@ public class Game {
 		while (isUp) {
 			snakeCurrY--;
 			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX, snakeCurrY + 1)) {
-				plain[snakeCurrX][snakeCurrY + 1] = EMPTY_SYMBOL;
+			if (!isOnPlainBorder(snakeCurrX, snakeCurrY + var)) {
+				plain[snakeCurrX][snakeCurrY + var] = EMPTY_SYMBOL;
 			}
 			printGamePlain();
 		}
+		eatApple();
 	}
 
 	private static void moveSnakeDown() {
@@ -129,16 +133,17 @@ public class Game {
 		while (isDown) {
 			snakeCurrY++;
 			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX, snakeCurrY - 1)) {
-				plain[snakeCurrX][snakeCurrY - 1] = EMPTY_SYMBOL;
+			if (!isOnPlainBorder(snakeCurrX, snakeCurrY - var)) {
+				plain[snakeCurrX][snakeCurrY - var] = EMPTY_SYMBOL;
 			}
 			printGamePlain();
 		}
+		eatApple();
 	}
 
 	private static void generateApple() {
 		Random rand = new Random();
-		appleBoard = new boolean[length][height];
+		appleLayer = new boolean[length][height];
 		int x = rand.nextInt(length);
 		int y = rand.nextInt(height);
 		while (isOnPlainBorder(x, y)) {
@@ -146,7 +151,7 @@ public class Game {
 			y = rand.nextInt(height);
 		}
 		plain[x][y] = APPLE_SYMBOL;
-		appleBoard[x][y] = true;
+		appleLayer[x][y] = true;
 
 	}
 
