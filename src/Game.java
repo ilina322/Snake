@@ -1,6 +1,8 @@
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+
 public class Game {
 
 	private static final char SNAKE_SYMBOL = 'o';
@@ -11,7 +13,6 @@ public class Game {
 	private static int height = 10;
 	private static int length = 25;
 	private static char[][] plain;
-	private static char apple = APPLE_SYMBOL;
 	private static int snakeCurrX = 1;
 	private static int snakeCurrY = 1;
 	private static boolean isRight = true;
@@ -22,13 +23,15 @@ public class Game {
 	private static int score = 0;
 	private static boolean[][] appleLayer;
 	private static int var = 1;
+	private static boolean[][] snakeLayer;
 
 	public static void main(String[] args) {
 
+		setKeyboardListener();
 		createGamePlain();
 		generateApple();
 		printGamePlain();
-		moveSnakeRight();
+		moveSnake();
 
 	}
 
@@ -47,14 +50,55 @@ public class Game {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void moveSnake(){
-		moveSnakeDown();
-		moveSnakeLeft();
-		moveSnakeRight();
-		moveSnakeUp();
+
+	private static void changeSnakeCoordinates() {
+		if (isDown) {
+			snakeCurrY++;
+		} else if (isUp) {
+			snakeCurrY--;
+		} else if (isRight) {
+			snakeCurrX++;
+		} else {
+			snakeCurrX--;
+		}
 	}
 
+	private static void moveSnake() {
+		while (isRunning) {
+			changeSnakeCoordinates();
+			putSnakeOnGamePlain(snakeCurrX, snakeCurrY);
+			printGamePlain();
+			eatApple();
+			//enlargeSnake(snakeCurrX, snakeCurrY);
+			clear();
+		}
+	}
+
+	private static void enlargeSnake(int x, int y) {
+			if (!isOnPlainBorder(x + var, y) && !appleLayer[x + var][y]) {
+				snakeLayer[x + var][y] = true;
+			}
+			if (!isOnPlainBorder(x - var, y) && !appleLayer[x - var][y]) {
+				snakeLayer[x - var][y] = true;
+			}
+			if (!isOnPlainBorder(x, y + var) && !appleLayer[x][y + var]) {
+				snakeLayer[x][y + var] = true;
+			}
+			if (!isOnPlainBorder(x, y - var) && !appleLayer[x][y - var]) {
+				snakeLayer[x][y - var] = true;
+			}
+	}
+
+	private static void clear(){
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < length; x++) {
+				if(!snakeLayer[x][y] && !appleLayer[x][y] && !isOnPlainBorder(x, y)){
+					plain[x][y] = EMPTY_SYMBOL;
+				}
+			}
+			System.out.println();
+		}
+	}
 	private static void handleCommand(char command) {
 		switch (command) {
 		case 'w':
@@ -82,63 +126,12 @@ public class Game {
 			isDown = false;
 			break;
 		}
-		moveSnake();
 	}
 
-	private static void moveSnakeRight() {
-		setKeyboardListener();
-		while (isRight) {
-			snakeCurrX++;
-			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX - var, snakeCurrY)) {
-				plain[snakeCurrX - var][snakeCurrY] = EMPTY_SYMBOL;
-				printGamePlain();
-			}
-		eatApple();
-		}
-	}
-
-	private static void moveSnakeLeft() {
-		setKeyboardListener();
-		while (isLeft) {
-			snakeCurrX--;
-			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX + var, snakeCurrY)) {
-				plain[snakeCurrX + var][snakeCurrY] = EMPTY_SYMBOL;
-			}
-			printGamePlain();
-		}
-		eatApple();
-	}
-
-	private static void printSnake(int x, int y) {
-		plain[x][y] = SNAKE_SYMBOL;
-	}
-
-	private static void moveSnakeUp() {
-		setKeyboardListener();
-		while (isUp) {
-			snakeCurrY--;
-			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX, snakeCurrY + var)) {
-				plain[snakeCurrX][snakeCurrY + var] = EMPTY_SYMBOL;
-			}
-			printGamePlain();
-		}
-		eatApple();
-	}
-
-	private static void moveSnakeDown() {
-		setKeyboardListener();
-		while (isDown) {
-			snakeCurrY++;
-			printSnake(snakeCurrX, snakeCurrY);
-			if (!isOnPlainBorder(snakeCurrX, snakeCurrY - var)) {
-				plain[snakeCurrX][snakeCurrY - var] = EMPTY_SYMBOL;
-			}
-			printGamePlain();
-		}
-		eatApple();
+	private static void putSnakeOnGamePlain(int x, int y) {
+		snakeLayer = new boolean[length][height];
+		snakeLayer[x][y] = true;
+		plain[x][y] = SNAKE_SYMBOL;	
 	}
 
 	private static void generateApple() {
@@ -167,10 +160,7 @@ public class Game {
 		System.out.println();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < length; x++) {
-				{
 					System.out.print(plain[x][y]);
-					printSnake(snakeCurrX, snakeCurrY);
-				}
 			}
 			System.out.println();
 		}
@@ -188,7 +178,7 @@ public class Game {
 				}
 			}
 		}
-
+		putSnakeOnGamePlain(snakeCurrX, snakeCurrY);
 	}
 
 	private static void clearConsole() {
