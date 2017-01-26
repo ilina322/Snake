@@ -20,9 +20,8 @@ public class Game {
 	private static boolean isLeft = false;
 	private static boolean isUp = false;
 	private static boolean isRunning = true;
-	private static int score = 0;
 	private static boolean[][] appleLayer;
-	private static int var = 1;
+	private static int score = 0;
 	private static boolean[][] snakeLayer;
 
 	public static void main(String[] args) {
@@ -39,7 +38,6 @@ public class Game {
 		if (appleLayer[snakeCurrX][snakeCurrY] == true) {
 			generateApple();
 			score++;
-			var++;
 		}
 	}
 
@@ -69,27 +67,11 @@ public class Game {
 			putSnakeOnGamePlain(snakeCurrX, snakeCurrY);
 			printGamePlain();
 			eatApple();
-			//enlargeSnake(snakeCurrX, snakeCurrY);
-			clear();
+			endGame();
 		}
 	}
 
-	private static void enlargeSnake(int x, int y) {
-			if (!isOnPlainBorder(x + var, y) && !appleLayer[x + var][y]) {
-				snakeLayer[x + var][y] = true;
-			}
-			if (!isOnPlainBorder(x - var, y) && !appleLayer[x - var][y]) {
-				snakeLayer[x - var][y] = true;
-			}
-			if (!isOnPlainBorder(x, y + var) && !appleLayer[x][y + var]) {
-				snakeLayer[x][y + var] = true;
-			}
-			if (!isOnPlainBorder(x, y - var) && !appleLayer[x][y - var]) {
-				snakeLayer[x][y - var] = true;
-			}
-	}
-
-	private static void clear(){
+	private static void clearSnake(){
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < length; x++) {
 				if(!snakeLayer[x][y] && !appleLayer[x][y] && !isOnPlainBorder(x, y)){
@@ -99,7 +81,7 @@ public class Game {
 			System.out.println();
 		}
 	}
-	private static void handleCommand(char command) {
+	private static void changeSnakeDirection(char command) {
 		switch (command) {
 		case 'w':
 			isUp = true;
@@ -133,6 +115,17 @@ public class Game {
 		snakeLayer[x][y] = true;
 		plain[x][y] = SNAKE_SYMBOL;	
 	}
+	
+	private static void endGame() {
+		if(isOnPlainBorder(snakeCurrX, snakeCurrY) && snakeLayer[snakeCurrX][snakeCurrY]){
+			isRunning = false;
+			System.out.println("Game Over");
+		}
+		if(score == 3){
+			isRunning = false;
+			System.out.println("You win");
+		}
+	}
 
 	private static void generateApple() {
 		Random rand = new Random();
@@ -165,6 +158,7 @@ public class Game {
 			System.out.println();
 		}
 		delay();
+		clearSnake();
 	}
 
 	private static void createGamePlain() {
@@ -198,7 +192,7 @@ public class Game {
 				Scanner scanner = new Scanner(System.in);
 				while (isRunning) {
 					char consoleReader = scanner.nextLine().charAt(0);
-					handleCommand(consoleReader);
+					changeSnakeDirection(consoleReader);
 					handleKeyPressed(consoleReader);
 				}
 				scanner.close();
