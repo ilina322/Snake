@@ -10,6 +10,7 @@ public class Game {
 	private static final char EMPTY_SYMBOL = ' ';
 	private static final char OUTLINE_SYMBOL = '*';
 	private static final long DELAY_IN_MILLIS = 500;
+	private static final int MAX_SCORE = 3;
 	private static int height = 10;
 	private static int length = 25;
 	private static char[][] plain;
@@ -121,7 +122,7 @@ public class Game {
 			isRunning = false;
 			System.out.println("Game Over");
 		}
-		if(score == 3){
+		if(score == MAX_SCORE){
 			isRunning = false;
 			System.out.println("You win");
 		}
